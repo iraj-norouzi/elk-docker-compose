@@ -5,14 +5,14 @@ services:
       context: elasticsearch/
     container_name: elasticsearch
     environment:
-      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
       - ./elasticsearch/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - "./esdata1:/usr/share/elasticsearch/data"
+      - ./esdata1:/usr/share/elasticsearch/data:rw
     ports:
       - 9200:9200
       - 9300:9300
@@ -31,7 +31,6 @@ services:
     networks:
       - esnet
     environment:
-      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
       SERVER_NAME: kibana
       ELASTICSEARCH_URL: http://elasticsearch:9200
   logstash:
@@ -42,7 +41,6 @@ services:
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
     ports:
       - "5044:5044"
-      - "9600:9600"
       - "5140:5140"
       - "5140:5140/udp"
     environment:
