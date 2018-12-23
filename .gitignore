@@ -1,0 +1,10 @@
+.vscode
+
+# Vagrant directory
+.vagrant
+
+# Directory rsync'd between Vagrant VM and host
+data
+
+# ElasticSearch data directory
+esdata1
