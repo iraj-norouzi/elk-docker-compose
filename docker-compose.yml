@@ -44,6 +44,7 @@ services:
       - "5044:5044"
       - "9600:9600"
       - "5140:5140"
+      - "5140:5140/udp"
     environment:
       LS_JAVA_OPTS: "-Xmx512m -Xms512m"
     depends_on:
