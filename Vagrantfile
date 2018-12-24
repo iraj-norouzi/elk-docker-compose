@@ -86,6 +86,6 @@ Vagrant.configure("2") do |config|
     echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-6.x.list
     sudo apt-get update
     sudo apt-get install -y filebeat
-    sudo filebeat modules enable system nginx mysql
+    sudo filebeat modules enable system nginx
   SHELL
 end
