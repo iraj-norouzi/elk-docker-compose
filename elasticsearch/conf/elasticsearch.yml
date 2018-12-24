@@ -94,3 +94,5 @@ discovery.type: single-node
 # to prevent these errors
 #[WARN ][o.e.c.r.a.DiskThresholdMonitor] [6LLUQXa] high disk watermark [90%] exceeded on [N4ud-VuZQ_e48X7NGtr4rA][N4ud-Vu][/usr/share/elasticsearch/data/nodes/0] free: 896.2mb[9.6%], shards will be relocated away from this node
 # cluster.routing.allocation.disk.threshold_enabled: false
+xpack.ml.enabled: true
+node.ml: true
