@@ -23,6 +23,7 @@ services:
       context: kibana/
     depends_on:
       - elasticsearch
+      - logstash
     container_name: kibana
     volumes:
       - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
