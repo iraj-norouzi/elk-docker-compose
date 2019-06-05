@@ -6,7 +6,7 @@ Small docker-compose project to get an ElasticSearch + Logstash + Kibana stack u
 
 Clone the repo to your local machine
 
-```sh
+```bash
 $ git clone https://github.com/acidDrain/elk-docker-compose.git
 Cloning into 'elk-docker-compose'...
 remote: Enumerating objects: 96, done.
@@ -19,7 +19,7 @@ Resolving deltas: 100% (41/41), done.
 
 Next, navigate to the directory and run `docker-compose up --build`
 
-```sh
+```bash
 $ cd elk-docker-compose
 $ docker-compose up --build
 Creating network "elk-docker-compose_esnet" with the default driver
@@ -56,4 +56,19 @@ Step 1/1 : FROM docker.elastic.co/kibana/kibana:6.5.4
 
 Successfully built 3c8a8603d365
 Successfully tagged elk-docker-compose_kibana:latest
+```
+
+## Accessing Kibana
+
+Kibana will be exposed on port `5601`.
+
+To access Kibana, open a browser and navigate to `http://localhost:5601/`
+
+## Troubleshooting Problems with ElasticSearch Starting
+
+Sometimes there an be an issue with ElasticSearch starting up - this is typically related to permissions issues with the volume mount. The docker-compose conifguration sets ElasticSearch to use a volume for data persistence, the folder in this project is esdata1. It should be owned by uid/guid 1000. If there are an permissions issues, they should easily be resolved with:
+
+```bash
+$ sudo chown -R 1000:1000 esdata1
+
 ```
