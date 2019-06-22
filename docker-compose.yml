@@ -33,6 +33,21 @@ services:
     restart: always
     volumes:
       - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+  filebeat:
+    build:
+      context: filebeat/
+    container_name: filebeat
+    depends_on:
+      - elasticsearch
+    environment:
+      elasticsearch.hosts: "elasticsearch:9200"
+      strict.perms: "false"
+    # To allow access to docker - remember filebeat.docker.yml must be owned by root
+    user: root
+    volumes:
+      - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   logstash:
     build:
       context: logstash/
