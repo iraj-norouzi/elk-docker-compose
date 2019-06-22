@@ -26,9 +26,6 @@ services:
     depends_on:
       - elasticsearch
       - logstash
-    environment:
-      SERVER_NAME: kibana
-      ELASTICSEARCH_URL: http://elasticsearch:9200
     networks:
       - esnet
     ports:
