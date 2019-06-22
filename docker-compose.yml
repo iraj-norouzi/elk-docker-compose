@@ -43,6 +43,7 @@ services:
       elasticsearch.hosts: "elasticsearch:9200"
       strict.perms: "false"
     # To allow access to docker - remember filebeat.docker.yml must be owned by root
+    # permissions should also be 644 e.g. (-rw-r--r--)
     user: root
     volumes:
       - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
