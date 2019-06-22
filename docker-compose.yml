@@ -6,7 +6,6 @@ services:
     container_name: elasticsearch
     environment:
       ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      xpack.ml.enabled: true
     networks:
       - esnet
     ports:
