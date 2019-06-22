@@ -3,42 +3,6 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
     reload.enabled: false
 
-- module: nginx
-  # Access logs
-  access:
-    enabled: true
-
-  # Error logs
-  error:
-    enabled: true
-
-- module: system
-  # Syslog
-  syslog:
-    enabled: true
-
-  # Authorization logs
-  auth:
-    enabled: true
-
-- module: iptables
-  log:
-    enabled: true
-
-- module: auditd
-  log:
-    enabled: true
-
-- module: postgresql
-  # All logs
-  log:
-    enabled: true
-
-- module: suricata
-  # All logs
-  eve:
-    enabled: true
-
 filebeat.autodiscover:
   providers:
     - type: docker
