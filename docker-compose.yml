@@ -36,20 +36,17 @@ services:
   filebeat:
     build:
       context: filebeat/
+    cap_add:
+      - SYS_ADMIN
     container_name: filebeat
     depends_on:
       - elasticsearch
     environment:
       elasticsearch.hosts: "elasticsearch:9200"
       strict.perms: "false"
-    # To allow access to docker - remember filebeat.docker.yml must be owned by root
-    # permissions should also be 644 e.g. (-rw-r--r--)
-    user: root
     volumes:
       - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/log:/var/log
+      - /var/log:/var/log:ro
   logstash:
     build:
       context: logstash/
