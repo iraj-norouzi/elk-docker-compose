@@ -7,7 +7,7 @@
     # Filebeat will choose the paths depending on your OS.
     var.paths:
       - /var/log/*.log
-      - /var/log/*/*.log
+      # - /var/log/*/*.log
 
   # Authorization logs
   auth:
