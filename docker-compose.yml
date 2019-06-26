@@ -33,21 +33,6 @@ services:
     restart: always
     volumes:
       - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
-  filebeat:
-    build:
-      context: filebeat/
-    cap_add:
-      - SYS_ADMIN
-    container_name: filebeat
-    depends_on:
-      - elasticsearch
-    environment:
-      elasticsearch.hosts: "elasticsearch:9200"
-      strict.perms: "false"
-    volumes:
-      - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./filebeat/modules.d:/usr/share/filebeat/modules.d:ro
-      - /var/log:/var/log:ro
   logstash:
     build:
       context: logstash/
