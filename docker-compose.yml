@@ -5,7 +5,7 @@ services:
       context: elasticsearch/
     container_name: elasticsearch
     environment:
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
     networks:
       - esnet
     ports:
