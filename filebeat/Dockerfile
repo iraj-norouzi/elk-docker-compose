@@ -1,2 +1,2 @@
-FROM docker.elastic.co/beats/filebeat-oss:7.1.1
+FROM docker.elastic.co/beats/filebeat:7.5.0
 
