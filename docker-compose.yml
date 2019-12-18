@@ -11,7 +11,7 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-    restart: always
+    restart: never
     ulimits:
       memlock:
         soft: -1
@@ -30,7 +30,7 @@ services:
       - esnet
     ports:
       - 5601:5601
-    restart: always
+    restart: never
     volumes:
       - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
   logstash:
@@ -47,7 +47,7 @@ services:
       - "5044:5044"
       - "5140:5140"
       - "5140:5140/udp"
-    restart: always
+    restart: never
     volumes:
       - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
