@@ -3,9 +3,17 @@ services:
   elasticsearch:
     build:
       context: elasticsearch/
-    container_name: elasticsearch
+    container_name: es01
     environment:
-      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+      - node.name=es01
+      - node.master=true
+      - node.ml=false
+      - discovery.type=single-node
+      - xpack.ml.enabled=false
+      - cluster.name=docker-elk
+      - bootstrap.memory_lock=true
+      - cluster.remote.connect=false
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
     networks:
       - esnet
     ports:
@@ -16,13 +24,27 @@ services:
       memlock:
         soft: -1
         hard: -1
+        # nofile: 65535
     volumes:
-      - ./elasticsearch/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      # - ./elasticsearch/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./esdata1:/usr/share/elasticsearch/data:rw
   kibana:
     build:
       context: kibana/
     container_name: kibana
+    environment:
+      - server.host=kibana
+      - server.port=5601
+      - server.name=kibana
+      - server.ssl.enabled=false
+      - kibana.index=.kibana
+      - logging.dest=stdout
+      - logging.silent=false
+      - logging.quiet=true
+      - logging.verbose=false
+      - elasticsearch.preserveHost=true
+      - elasticsearch.startupTimeout=10000
+      - elasticsearch.hosts=http://es01:9200
     depends_on:
       - elasticsearch
       - logstash
@@ -31,29 +53,33 @@ services:
     ports:
       - 5601:5601
     restart: unless-stopped
-    volumes:
-      - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+    # volumes:
+    #   - ./kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
   logstash:
     build:
       context: logstash/
     container_name: logstash
+    environment:
+      # - http.host=0.0.0.0
+      # - xpack.monitoring.enabled=true
+      # - xpack.monitoring.elasticsearch.hosts=http://es01:9200
+      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
     depends_on:
       - elasticsearch
-    environment:
-      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
     networks:
       - esnet
     ports:
       - "5044:5044"
       - "5140:5140"
       - "5140:5140/udp"
+      - "9600:9600"
     restart: unless-stopped
     volumes:
       - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
 
-volumes:
-  esdata1:
+# volumes:
+  # esdata1:
 
 networks:
   esnet:
