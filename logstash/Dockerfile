@@ -1,3 +1,3 @@
-FROM docker.elastic.co/logstash/logstash-oss:7.1.1
-#RUN bin/logstash-plugin install logstash-input-beats logstash-input-syslog
+FROM docker.elastic.co/logstash/logstash:7.5.0
+RUN bin/logstash-plugin install logstash-input-beats logstash-input-syslog logstash-output-elasticsearch
 
