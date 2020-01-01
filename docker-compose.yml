@@ -65,11 +65,13 @@ services:
       - "5044:5044"
       - "5140:5140"
       - "5140:5140/udp"
+      - "5141:5141/udp" 
       - "9600:9600"
     restart: unless-stopped
     volumes:
       - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
+      - ./logstash/patterns:/usr/share/logstash/patterns:ro
 
 networks:
   esnet:

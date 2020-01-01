@@ -2,6 +2,7 @@
 # For more information on multiple pipelines, see the documentation:
 #   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
 
-- pipeline.id: main
-  path.config: "/usr/share/logstash/pipeline/*"
-
+- pipeline.id: fortigate
+  path.config: "/usr/share/logstash/pipeline/01-fgt-traffic-syslog.conf"
+- pipeline.id: pihole
+  path.config: "/usr/share/logstash/pipeline/02-dnsmasq-syslog.conf"
