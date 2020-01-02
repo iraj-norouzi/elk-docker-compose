@@ -242,20 +242,6 @@
             }
           }
         },
-        "logstash-host" : {
-          "properties" : {
-            "name" : {
-              "type" : "text",
-              "norms" : false,
-              "fields" : {
-                "keyword" : {
-                  "type" : "keyword",
-                  "ignore_above" : 256
-                }
-              }
-            }
-          }
-        },
         "input" : {
           "properties" : {
             "type" : {
