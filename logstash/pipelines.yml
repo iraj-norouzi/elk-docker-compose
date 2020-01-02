@@ -6,3 +6,5 @@
   path.config: "/usr/share/logstash/pipeline/01-fgt-traffic-syslog.conf"
 - pipeline.id: pihole
   path.config: "/usr/share/logstash/pipeline/02-dnsmasq-syslog.conf"
+- pipeline.id: linux-syslog
+  path.config: "/usr/share/logstash/pipeline/03-linux-syslog.conf"
