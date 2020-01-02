@@ -242,7 +242,7 @@
             }
           }
         },
-        "host" : {
+        "logstash-host" : {
           "properties" : {
             "name" : {
               "type" : "text",
@@ -333,7 +333,7 @@
         "request_from" : {
           "type" : "ip"
         },
-        "source_fqdn" : {
+        "requestor" : {
           "type" : "text",
           "norms" : false,
           "fields" : {
