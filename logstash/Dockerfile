@@ -1,3 +1,3 @@
 FROM docker.elastic.co/logstash/logstash:7.5.0
-RUN bin/logstash-plugin install logstash-input-beats logstash-input-syslog logstash-output-elasticsearch logstash-filter-grok logstash-filter-date logstash-filter-geoip logstash-filter-mutate logstash-filter-kv
+RUN bin/logstash-plugin install logstash-input-beats logstash-input-syslog logstash-output-elasticsearch logstash-filter-grok logstash-filter-geoip
 
