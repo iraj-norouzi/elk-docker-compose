@@ -6,6 +6,10 @@
         port => 5140
         type => "syslog" 
       }
+      tcp {
+        port => 5140
+        type => "syslog" 
+      }
     }
     filter { 
       if [msg] =~ "policytype=" {
