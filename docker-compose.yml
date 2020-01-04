@@ -4,6 +4,8 @@ services:
     build:
       context: elasticsearch/
     container_name: elasticsearch
+    security_opt:
+      - seccomp:unconfined
     environment:
       - node.name=elasticsearch
       - node.master=true
@@ -55,6 +57,8 @@ services:
     build:
       context: logstash/
     container_name: logstash
+    security_opt:
+      - seccomp:unconfined
     environment:
       - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
     depends_on:
