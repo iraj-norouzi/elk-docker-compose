@@ -8,11 +8,11 @@
       }
     }
     filter { 
-      if [message] =~ "policytype=" {
+      if [msg] =~ "policytype=" {
         mutate {
           add_tag => [ "fortigate" ]
         } 
-      } else if [message] =~ "dnsmasq" {
+      } else if [msg] =~ "dnsmasq" {
         mutate {
           add_tag => [ "pihole" ]
         } 
