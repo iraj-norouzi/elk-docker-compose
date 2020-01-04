@@ -283,14 +283,12 @@
     }
 - pipeline.id: linux-syslog
   config.string: |
-    input { pipeline { address => syslog } }
+    input { pipeline { address => linux } }
     filter {
       if "linux" in [tags] { 
-        mutate {
-          gsub => [
-            "message", "^<[0-9][0-9][0-9]>", ""]
+        grok {
+          match => { "message" => "%{SYSLOGBASE} %{DATA:message}" }
         }
-        kv { }
       }
     }
     output {
