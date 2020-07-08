@@ -1,7 +1,76 @@
-# This file is where you define your pipelines. You can define multiple.
-# For more information on multiple pipelines, see the documentation:
-#   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
-
-- pipeline.id: main
-  path.config: "/usr/share/logstash/pipeline/*"
-
+# config/pipelines.yml
+- pipeline.id: fgt-syslog
+  config.string: |
+    input {
+      udp {
+        port => 5140
+        type => "syslog" 
+      }
+      tcp {
+        port => 5140
+        type => "syslog" 
+      }
+    }
+    filter { 
+      if [msg] =~ "policytype=" {
+        mutate {
+          add_tag => [ "fortigate" ]
+        } 
+      } else {
+        mutate {
+          add_tag => [ "linux" ]
+        } 
+      }
+    } 
+    output {
+        if "fortigate" in [tags] {
+          pipeline { send_to => fortigate }
+        } else if "linux" in [tags] {
+          pipeline { send_to => linux }
+        } else {
+          pipeline { send_to => fallback }
+        }
+    }
+- pipeline.id: fortigate-syslog
+  config.string: |
+    input { pipeline { address => fortigate } }
+    filter { 
+      if "fortigate" in [tags] {
+        mutate {
+          gsub => [
+              "message", "^<[0-9][0-9][0-9]>", ""]
+        }
+        kv { }
+        output {
+          elasticsearch {
+            hosts => [ "elasticsearch:9200" ]
+            index => "fortigate-%{+YYYY.MM.dd}"
+          }
+        }
+      }
+    }
+- pipeline.id: linux-syslog
+  config.string: |
+    input { pipeline { address => linux } }
+    filter {
+      if "linux" in [tags] { 
+        grok {
+          match => { "message" => "%{SYSLOGBASE} %{DATA:message}" }
+        }
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => [ "elasticsearch:9200" ]
+        index => "linux-%{+YYYY.MM.dd}"
+      }
+    }
+- pipeline.id: fallback-processing
+    config.string: |
+    input { pipeline { address => fallback } }
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "fallback-%{+YYYY.MM.dd}"
+      }
+    }
