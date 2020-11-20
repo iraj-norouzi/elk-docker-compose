@@ -15,8 +15,8 @@ services:
       - bootstrap.memory_lock=true
       - cluster.remote.connect=false
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-    networks:
-      - esnet
+    # networks:
+    #   - esnet
     ports:
       - 9200:9200
       - 9300:9300
@@ -47,23 +47,21 @@ services:
       - elasticsearch.hosts=http://elasticsearch:9200
     depends_on:
       - elasticsearch
-      - logstash
-    networks:
-      - esnet
+      # - logstash
+    # networks:
+    #   - esnet
     ports:
       - 5601:5601
     restart: unless-stopped
 
-  logstash:
+  fluentbit:
     build:
-      context: logstash/
-    container_name: logstash
-    environment:
-      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
+      context: fluentbit/
+    container_name: fluentbit
     depends_on:
       - elasticsearch
-    networks:
-      - esnet
+    # networks:
+    #   - esnet
     ports:
       - "5044:5044"
       - "5140:5140/udp"
@@ -71,9 +69,11 @@ services:
       - "9600:9600"
     restart: unless-stopped
     volumes:
-      - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
-      - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
-      - ./logstash/patterns:/usr/share/logstash/patterns:ro
+      - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    # volumes:
+    #   - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
+    #   - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
+    #   - ./logstash/patterns:/usr/share/logstash/patterns:ro
 
-networks:
-  esnet:
+# networks:
+#   esnet:

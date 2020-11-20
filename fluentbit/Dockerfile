@@ -1,0 +1,2 @@
+FROM fluent/fluent-bit:latest
+
