@@ -8,3 +8,10 @@ data
 
 # ElasticSearch data directory
 esdata1
+
+**/*.swp
+**/.env
+.env
+Session.vim
+tags
+
