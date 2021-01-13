@@ -5,8 +5,6 @@ services:
     build:
       context: elasticsearch/
     container_name: elasticsearch
-    dns: ${DNS_HOST}
-    dns_search: ${DNS_SEARCH}
     environment:
       - "node.name=es1"
       - "node.master=true"
@@ -38,24 +36,26 @@ services:
       - esdata1:/usr/share/elasticsearch/data:rw
       # - ./ssl:/usr/share/elasticsearch/config/certificates:ro
 
-        #  fluentbit:
-        #    build:
-        #      context: fluentbit/
-        #    container_name: fluentbit
-        #    depends_on:
-        #      - elasticsearch
-        #    networks:
-        #      - esnet
-        #    ports:
-        #      - "5044:5044"
-        #      - "5140:5140/udp"
-        #      - "5140:5140"
-        #      - "9600:9600"
-        #    restart: unless-stopped
-        #    volumes:
-        #      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
-        #      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
-        #
+  fluentbit:
+    build:
+      context: fluentbit/
+    container_name: fluentbit
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+    ports:
+      - "5044:5044"
+      - "5140:5140/udp"
+      - "5140:5140"
+      - "9600:9600"
+      - "24224:24224"
+      - "2020:2020"
+    restart: unless-stopped
+    volumes:
+      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+
 networks:
   esnet:
 
