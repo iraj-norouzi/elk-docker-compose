@@ -1,20 +1,29 @@
-version: "3.4"
+version: "3.7"
 services:
 
   elasticsearch:
     build:
       context: elasticsearch/
     container_name: elasticsearch
+    dns: ${DNS_HOST}
+    dns_search: ${DNS_SEARCH}
     environment:
-      - node.name=elasticsearch
+      - node.name=es1
       - node.master=true
       - node.ml=false
       - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.ml.enabled=false
-      - cluster.name=docker-elk
+      - cluster.name=${ELASTIC_HOST}
       - bootstrap.memory_lock=true
       - cluster.remote.connect=false
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.client_authentication=optional
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/growfam.io.privkey.pem
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/growfam.io.bundle.pem
+      - xpack.security.transport.ssl.enabled=false
     networks:
       - esnet
     ports:
@@ -27,7 +36,7 @@ services:
         hard: -1
     volumes:
       - esdata1:/usr/share/elasticsearch/data:rw
-      - ./ssl:/etc/ssl:ro
+      - ./ssl:/usr/share/elasticsearch/config/certificates:ro
 
   kibana:
     build:
@@ -36,18 +45,19 @@ services:
     dns: ${DNS_HOST}
     dns_search: ${DNS_SEARCH}
     environment:
-      - server.host="kibana"
-      - server.port="5601"
-      - server.name="kibana"
+      - server.host=kibana
+      - server.port=5601
+      - server.name=kibana
       - server.ssl.enabled=false
-      - kibana.index=".kibana"
-      - logging.dest="stdout"
+      - kibana.index=.kibana
+      - logging.dest=stdout
       - logging.silent=false
       - logging.quiet=true
       - logging.verbose=false
       - elasticsearch.preserveHost=true
       - elasticsearch.startupTimeout=10000
-      - elasticsearch.hosts="https://${ELASTIC_HOST}:9200"
+      - elasticsearch.hosts=https://${ELASTIC_HOST}:9200
+      - elasticsearch.ssl.certificateAuthorities="/usr/share/elasticsearch/config/certificates/ca-bundle.pem"
     depends_on:
       - elasticsearch
     networks:
@@ -55,7 +65,8 @@ services:
     ports:
       - "127.0.0.1:5601:5601"
     restart: unless-stopped
-    # volumes:
+    volumes:
+      - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
     #   - ./ssl:/etc/ssl:ro
 
   fluentbit:
