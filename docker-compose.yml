@@ -39,13 +39,12 @@ services:
       - ./ssl:/usr/share/elasticsearch/config/certificates:ro
 
   kibana:
-    build:
-      context: kibana/
+    image: docker.elastic.co/kibana/kibana:7.10.1
     container_name: kibana
     dns: ${DNS_HOST}
     dns_search: ${DNS_SEARCH}
     environment:
-      - server.host=kibana
+      - server.host=kibana.growfam.io
       - server.port=5601
       - server.name=kibana
       - server.ssl.enabled=false
@@ -57,7 +56,7 @@ services:
       - elasticsearch.preserveHost=true
       - elasticsearch.startupTimeout=10000
       - elasticsearch.hosts=https://${ELASTIC_HOST}:9200
-      - elasticsearch.ssl.certificateAuthorities="/usr/share/elasticsearch/config/certificates/ca-bundle.pem"
+      - elasticsearch.ssl.certificateAuthorities=/usr/share/elasticsearch/config/certificates/ca-bundle.pem
     depends_on:
       - elasticsearch
     networks:
