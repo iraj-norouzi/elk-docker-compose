@@ -18,12 +18,12 @@ services:
       - "bootstrap.memory_lock=true"
       - "cluster.remote.connect=false"
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.client_authentication=optional"
-      - "xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/growfam.io.privkey.pem"
-      - "xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/growfam.io.bundle.pem"
+      - "xpack.security.enabled=false"
+      - "xpack.security.http.ssl.enabled=false"
       - "xpack.security.transport.ssl.enabled=false"
+      # - "xpack.security.http.ssl.client_authentication=optional"
+      # - "xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/growfam.io.privkey.pem"
+      # - "xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/growfam.io.bundle.pem"
     networks:
       - esnet
     ports:
@@ -36,56 +36,26 @@ services:
         hard: -1
     volumes:
       - esdata1:/usr/share/elasticsearch/data:rw
-      - ./ssl:/usr/share/elasticsearch/config/certificates:ro
+      # - ./ssl:/usr/share/elasticsearch/config/certificates:ro
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.1
-    container_name: kibana
-    dns: ${DNS_HOST}
-    dns_search: ${DNS_SEARCH}
-    environment:
-      - "server.host=kibana.growfam.io"
-      - "server.port=5601"
-      - "server.name=kibana"
-      - "server.ssl.enabled=false"
-      - "kibana.index=.kibana"
-      - "logging.dest=stdout"
-      - "logging.silent=false"
-      - "logging.quiet=true"
-      - "logging.verbose=false"
-      - "elasticsearch.preserveHost=true"
-      - "elasticsearch.startupTimeout=10000"
-      - 'elasticsearch.hosts=["https://${ELASTIC_HOST}:9200"]'
-      - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
-    depends_on:
-      - elasticsearch
-    networks:
-      - esnet
-    ports:
-      - "127.0.0.1:5601:5601"
-    restart: unless-stopped
-    volumes:
-      - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
-    #   - ./ssl:/etc/ssl:ro
-
-  fluentbit:
-    build:
-      context: fluentbit/
-    container_name: fluentbit
-    depends_on:
-      - elasticsearch
-    networks:
-      - esnet
-    ports:
-      - "5044:5044"
-      - "5140:5140/udp"
-      - "5140:5140"
-      - "9600:9600"
-    restart: unless-stopped
-    volumes:
-      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
-
+        #  fluentbit:
+        #    build:
+        #      context: fluentbit/
+        #    container_name: fluentbit
+        #    depends_on:
+        #      - elasticsearch
+        #    networks:
+        #      - esnet
+        #    ports:
+        #      - "5044:5044"
+        #      - "5140:5140/udp"
+        #      - "5140:5140"
+        #      - "9600:9600"
+        #    restart: unless-stopped
+        #    volumes:
+        #      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
+        #      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+        #
 networks:
   esnet:
 
