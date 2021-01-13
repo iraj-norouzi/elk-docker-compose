@@ -26,7 +26,8 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./esdata1:/usr/share/elasticsearch/data:rw
+    # Use a docker volume instead of bind mount
+      - esdata1:/usr/share/elasticsearch/data:rw
 
   kibana:
     build:
@@ -77,3 +78,7 @@ services:
 
 networks:
   esnet:
+
+volumes:
+  esdata1:
+
