@@ -96,3 +96,10 @@ discovery.type: single-node
 cluster.routing.allocation.disk.threshold_enabled: false
 # xpack.ml.enabled: true
 # node.ml: true
+
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.key:  /etc/ssl/private/growfam.io.privkey.pem
+xpack.security.http.ssl.certificate: /etc/ssl/certs/growfam.io.bundle.pem
+#xpack.security.http.ssl.certificate_authorities: [ "/home/es/config/ca.crt" ] 
+
