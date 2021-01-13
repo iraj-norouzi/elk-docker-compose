@@ -1,64 +1,30 @@
 version: "3.7"
 services:
 
-  elasticsearch:
-    build:
-      context: elasticsearch/
-    container_name: elasticsearch
-    dns: ${DNS_HOST}
-    dns_search: ${DNS_SEARCH}
-    environment:
-      - "node.name=es1"
-      - "node.master=true"
-      - "node.ml=false"
-      - "discovery.type=single-node"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "xpack.ml.enabled=false"
-      - "cluster.name=${ELASTIC_HOST}"
-      - "bootstrap.memory_lock=true"
-      - "cluster.remote.connect=false"
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.client_authentication=optional"
-      - "xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/growfam.io.privkey.pem"
-      - "xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/growfam.io.bundle.pem"
-      - "xpack.security.transport.ssl.enabled=false"
-    networks:
-      - esnet
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    restart: unless-stopped
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata1:/usr/share/elasticsearch/data:rw
-      - ./ssl:/usr/share/elasticsearch/config/certificates:ro
-
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.1
     container_name: kibana
     dns: ${DNS_HOST}
     dns_search: ${DNS_SEARCH}
     environment:
-      - "server.host=kibana.growfam.io"
-      - "server.port=5601"
-      - "server.name=kibana"
-      - "server.ssl.enabled=false"
-      - "kibana.index=.kibana"
-      - "logging.dest=stdout"
-      - "logging.silent=false"
-      - "logging.quiet=true"
-      - "logging.verbose=false"
-      - "elasticsearch.preserveHost=true"
-      - "elasticsearch.startupTimeout=10000"
-      - 'elasticsearch.hosts=["https://${ELASTIC_HOST}:9200"]'
-      - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
-    depends_on:
-      - elasticsearch
+      - elasticsearch.preserveHost=true
+      - elasticsearch.startupTimeout=10000
+      - elasticsearch.username=elastic
+      - elasticsearch.password=${ELASTIC_PASSWORD}
+      - elasticsearch.monitoring=false
+      - elasticsearch.hosts=[${ELASTIC_HOST}]
+      # - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
+      - kibana.index=.kibana
+      - logging.dest=stdout
+      - logging.silent=false
+      - logging.quiet=true
+      - logging.verbose=false
+      - monitoring.enabled=false
+      - monitoring.ui.enabled=false
+      - server.host=kibana.growfam.io
+      - server.port=5601
+      - server.name=kibana
+      - server.ssl.enabled=false
     networks:
       - esnet
     ports:
@@ -67,24 +33,6 @@ services:
     volumes:
       - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
     #   - ./ssl:/etc/ssl:ro
-
-  fluentbit:
-    build:
-      context: fluentbit/
-    container_name: fluentbit
-    depends_on:
-      - elasticsearch
-    networks:
-      - esnet
-    ports:
-      - "5044:5044"
-      - "5140:5140/udp"
-      - "5140:5140"
-      - "9600:9600"
-    restart: unless-stopped
-    volumes:
-      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
 
 networks:
   esnet:
