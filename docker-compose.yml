@@ -33,19 +33,21 @@ services:
     build:
       context: kibana/
     container_name: kibana
+    dns: ${DNS_HOST}
+    dns_search: ${DNS_SEARCH}
     environment:
-      - server.host=kibana
-      - server.port=5601
-      - server.name=kibana
+      - server.host="kibana"
+      - server.port="5601"
+      - server.name="kibana"
       - server.ssl.enabled=false
-      - kibana.index=.kibana
-      - logging.dest=stdout
+      - kibana.index=".kibana"
+      - logging.dest="stdout"
       - logging.silent=false
       - logging.quiet=true
       - logging.verbose=false
       - elasticsearch.preserveHost=true
       - elasticsearch.startupTimeout=10000
-      - elasticsearch.hosts=https://elasticsearch:9200
+      - elasticsearch.hosts="https://${ELASTIC_HOST}:9200"
     depends_on:
       - elasticsearch
     networks:
