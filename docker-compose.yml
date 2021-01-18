@@ -43,8 +43,8 @@ services:
       - "2020:2020"
     restart: unless-stopped
     volumes:
-      - ./fluentbit/fluentbit-es.conf:/
-      - ./fluentbit/parsers.conf
+      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
 
   logstash:
     build: # image: docker.elastic.co/logstash/logstash-oss:7.10.1
