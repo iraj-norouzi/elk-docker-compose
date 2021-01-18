@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: elasticsearch-v7-filebeat
+    type: elasticsearch
+    access: proxy
+    database: "[filebeat-]YYYY.MM.DD"
+    url: https://elasticsearch:443
+    jsonData:
+      interval: Daily
+      timeField: "@timestamp"
+      esVersion: 70
+      logMessageField: message
+      logLevelField: fields.level
+
