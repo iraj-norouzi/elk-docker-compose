@@ -5,15 +5,15 @@ services:
     image: docker.elastic.co/elasticsearch/${ES_IMAGE_NAME}:${ES_VERSION_TAG}
     container_name: elasticsearch
     environment:
-      node.name: "es1"
-      node.master: "true"
-      discovery.type: "single-node"
-      ELASTIC_PASSWORD: "${ELASTIC_PASSWORD}"
-      cluster.name: "${ELASTIC_HOST}"
-      bootstrap.memory_lock: "true"
-      cluster.remote.connect: "false"
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      enterpriseSearch.host: "${ELASTIC_HOST}"
+      - node.name=es1
+      - node.master=true
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - cluster.name=${ELASTIC_HOST}
+      - bootstrap.memory_lock=true
+      - cluster.remote.connect=false
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - enterpriseSearch.host=${ELASTIC_HOST}
     networks: 
       - esnet
     ports:
@@ -33,11 +33,8 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - "esnet"
+      - esnet
     ports:
-      - "5044:5044"
-      - "5140:5140/udp"
-      - "5140:5140"
       - "9600:9600"
       - "24224:24224"
       - "2020:2020"
@@ -55,19 +52,48 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - "esnet"
+      - esnet
     ports:
       - "5044:5044"
       - "5140:5140/udp"
       - "5140:5140"
-      - "9600:9600"
-      - "24224:24224"
-      - "2020:2020"
     restart: unless-stopped
     volumes:
       - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
-      - ./logstash/patterns:/usr/share/logstash/patterns:ro
+
+  kibana:
+    image: docker.elastic.co/kibana/${KIBANA_IMAGE_NAME}:${KIBANA_VERSION_TAG}
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      - elasticsearch.preserveHost=true
+      - elasticsearch.startupTimeout=100000
+      - elasticsearch.monitoring=false
+      - elasticsearch.hosts=[${ELASTIC_HOST}]
+      - kibana.index=.kibana
+      - logging.dest=stdout
+      - logging.silent=false
+      - logging.quiet=true
+      - logging.verbose=false
+      - monitoring.enabled=false
+      - monitoring.ui.enabled=false
+      - server.host=${KIBANA_HOSTNAME}
+      - server.port=${KIBANA_PORT}
+      - server.name=${KIBANA_SERVER}
+      - server.ssl.enabled=false
+      - enterpriseSearch.host=${ELASTIC_HOST}
+      # - elasticsearch.username=elastic
+      # - elasticsearch.password=${ELASTIC_PASSWORD}
+      # - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
+    networks:
+      - esnet
+    ports:
+      - "127.0.0.1:5601:5601"
+    restart: unless-stopped
+    # volumes:
+    #   - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
 
 networks:
   esnet:
