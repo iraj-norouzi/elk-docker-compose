@@ -18,15 +18,13 @@
         } 
       } else {
         mutate {
-          add_tag => [ "linux" ]
+          add_tag => [ "fallback" ]
         } 
       }
     } 
     output {
         if "fortigate" in [tags] {
           pipeline { send_to => fortigate }
-        } else if "linux" in [tags] {
-          pipeline { send_to => linux }
         } else {
           pipeline { send_to => fallback }
         }
@@ -38,7 +36,7 @@
       if "fortigate" in [tags] {
         mutate {
           gsub => [
-              "message", "^<[0-9][0-9][0-9]>", ""]
+              "message", "^<[0-9]?[0-9][0-9]>", ""]
         }
         kv { }
         output {
@@ -49,22 +47,22 @@
         }
       }
     }
-- pipeline.id: linux-syslog
-  config.string: |
-    input { pipeline { address => linux } }
-    filter {
-      if "linux" in [tags] { 
-        grok {
-          match => { "message" => "%{SYSLOGBASE} %{DATA:message}" }
-        }
-      }
-    }
-    output {
-      elasticsearch {
-        hosts => [ "elasticsearch:9200" ]
-        index => "linux-%{+YYYY.MM.dd}"
-      }
-    }
+    #- pipeline.id: linux-syslog
+    #  config.string: |
+    #    input { pipeline { address => linux } }
+    #    filter {
+    #      if "linux" in [tags] { 
+    #        grok {
+    #          match => { "message" => "%{SYSLOGBASE} %{DATA:message}" }
+    #        }
+    #      }
+    #    }
+    #    output {
+    #      elasticsearch {
+    #        hosts => [ "elasticsearch:9200" ]
+    #        index => "linux-%{+YYYY.MM.dd}"
+    #      }
+    #    }
 - pipeline.id: fallback-processing
     config.string: |
     input { pipeline { address => fallback } }

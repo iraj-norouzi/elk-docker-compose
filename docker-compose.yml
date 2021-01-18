@@ -2,18 +2,15 @@ version: "3.7"
 services:
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.1
+    image: docker.elastic.co/kibana/kibana-oss:7.10.1
     container_name: kibana
     dns: ${DNS_HOST}
     dns_search: ${DNS_SEARCH}
     environment:
       - elasticsearch.preserveHost=true
-      - elasticsearch.startupTimeout=10000
-      - elasticsearch.username=elastic
-      - elasticsearch.password=${ELASTIC_PASSWORD}
+      - elasticsearch.startupTimeout=100000
       - elasticsearch.monitoring=false
       - elasticsearch.hosts=[${ELASTIC_HOST}]
-      # - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
       - kibana.index=.kibana
       - logging.dest=stdout
       - logging.silent=false
@@ -25,18 +22,42 @@ services:
       - server.port=5601
       - server.name=kibana
       - server.ssl.enabled=false
+      - enterpriseSearch.host=${ELASTIC_HOST}
+      # - elasticsearch.username=elastic
+      # - elasticsearch.password=${ELASTIC_PASSWORD}
+      # - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
     networks:
       - esnet
     ports:
       - "127.0.0.1:5601:5601"
     restart: unless-stopped
-    volumes:
-      - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
+    # volumes:
+    #   - ${CA_BUNDLE}:/usr/share/elasticsearch/config/certificates/ca-bundle.pem:ro
     #   - ./ssl:/etc/ssl:ro
+
+  logstash:
+    # image: docker.elastic.co/logstash/logstash-oss:7.10.1
+    build:
+      context: logstash/
+    container_name: logstash
+    environment:
+      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
+    networks:
+      - esnet
+    ports:
+      - "5044:5044"
+      - "5140:5140/udp"
+      - "5140:5140"
+      - "9600:9600"
+    restart: unless-stopped
+    volumes:
+      - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
+      - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
+      - ./logstash/patterns:/usr/share/logstash/patterns:ro
 
 networks:
   esnet:
 
-volumes:
-  esdata1:
+# volumes:
+#   esdata1:
 
