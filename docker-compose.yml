@@ -2,27 +2,19 @@ version: "3.7"
 services:
 
   elasticsearch:
-    build:
-      context: elasticsearch/
+    image: docker.elastic.co/elasticsearch/${ES_IMAGE_NAME}:${ES_VERSION_TAG}
     container_name: elasticsearch
     environment:
-      - "node.name=es1"
-      - "node.master=true"
-      - "node.ml=false"
-      - "discovery.type=single-node"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "xpack.ml.enabled=false"
-      - "cluster.name=${ELASTIC_HOST}"
-      - "bootstrap.memory_lock=true"
-      - "cluster.remote.connect=false"
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - "xpack.security.enabled=false"
-      - "xpack.security.http.ssl.enabled=false"
-      - "xpack.security.transport.ssl.enabled=false"
-      # - "xpack.security.http.ssl.client_authentication=optional"
-      # - "xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/growfam.io.privkey.pem"
-      # - "xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/growfam.io.bundle.pem"
-    networks:
+      node.name: "es1"
+      node.master: "true"
+      discovery.type: "single-node"
+      ELASTIC_PASSWORD: "${ELASTIC_PASSWORD}"
+      cluster.name: "${ELASTIC_HOST}"
+      bootstrap.memory_lock: "true"
+      cluster.remote.connect: "false"
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      enterpriseSearch.host: "${ELASTIC_HOST}"
+    networks: 
       - esnet
     ports:
       - "9200:9200"
@@ -33,17 +25,15 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - esdata1:/usr/share/elasticsearch/data:rw
-      # - ./ssl:/usr/share/elasticsearch/config/certificates:ro
+      - ./elasticsearch/esdata1:/usr/share/elasticsearch/data:rw
 
   fluentbit:
-    build:
-      context: fluentbit/
+    image: fluent/${FLUENTBIT_IMAGE_NAME}:${FLUENTBIT_VERSION_TAG}
     container_name: fluentbit
     depends_on:
       - elasticsearch
     networks:
-      - esnet
+      - "esnet"
     ports:
       - "5044:5044"
       - "5140:5140/udp"
@@ -59,6 +49,6 @@ services:
 networks:
   esnet:
 
-volumes:
-  esdata1:
+# volumes:
+#   esdata1:
 
