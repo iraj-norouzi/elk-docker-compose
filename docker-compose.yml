@@ -27,41 +27,62 @@ services:
     volumes:
       - ./elasticsearch/esdata1:/usr/share/elasticsearch/data:rw
 
-  fluentbit:
-    image: fluent/${FLUENTBIT_IMAGE_NAME}:${FLUENTBIT_VERSION_TAG}
-    container_name: fluentbit
+  fluentd:
+    build: ./fluentd
+    container_name: fluentd
     depends_on:
-      - elasticsearch
+      - "elasticsearch"
+    links:
+      - "elasticsearch"
     networks:
       - esnet
     ports:
-      - "9600:9600"
       - "24224:24224"
-      - "2020:2020"
-    restart: unless-stopped
+      - "24224:24224/udp"
+      - "5141:5141/udp"
     volumes:
-      - ./fluentbit/fluentbit-es.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./fluentbit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - ./fluentd/conf:/fluentd/etc
 
-  logstash:
-    build: # image: docker.elastic.co/logstash/logstash-oss:7.10.1
-      context: logstash/
-    container_name: logstash
-    environment:
-      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
-    depends_on:
-      - elasticsearch
-    networks:
-      - esnet
-    ports:
-      - "5044:5044"
-      - "5140:5140/udp"
-      - "5140:5140"
-    restart: unless-stopped
-    volumes:
-      - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
-      - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
-
+        #  fluentbit:
+        #    image: fluent/${FLUENTBIT_IMAGE_NAME}:${FLUENTBIT_VERSION_TAG}
+        #    container_name: fluentbit
+        #    depends_on:
+        #      - elasticsearch
+        #    networks:
+        #      - esnet
+        #    ports:
+        #      - "9600:9600"
+        #      - "5170:5170"
+        #      - "5141:5141"
+        #      - "5141:5141/udp"
+        #      - "24224:24224"
+        #      - "2020:2020"
+        #    restart: unless-stopped
+        #    volumes:
+        #      - ./fluentbit/etc/tcp.conf:/fluent-bit/etc/fluent-bit.conf:ro
+        #      # - ./fluentbit/etc/fluent-bit-fgt.conf:/fluent-bit/etc/fluent-bit.conf:ro
+        #      # - ./fluentbit/etc/fgt-parser.conf:/fluent-bit/etc/fgt-parser.conf:ro
+        #      # - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+        #
+        #  logstash:
+        #    build: # image: docker.elastic.co/logstash/logstash-oss:7.10.1
+        #      context: logstash/
+        #    container_name: logstash
+        #    environment:
+        #      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
+        #    depends_on:
+        #      - elasticsearch
+        #    networks:
+        #      - esnet
+        #    ports:
+        #      - "5044:5044"
+        #      - "5140:5140/udp"
+        #      - "5140:5140"
+        #    restart: unless-stopped
+        #    volumes:
+        #      - ./logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
+        #      - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
+        #
   kibana:
     image: docker.elastic.co/kibana/${KIBANA_IMAGE_NAME}:${KIBANA_VERSION_TAG}
     container_name: kibana
@@ -87,6 +108,8 @@ services:
       # - elasticsearch.username=elastic
       # - elasticsearch.password=${ELASTIC_PASSWORD}
       # - 'elasticsearch.ssl.certificateAuthorities=["/usr/share/elasticsearch/config/certificates/ca-bundle.pem"]'
+    links:
+      - "elasticsearch"
     networks:
       - esnet
     ports:
